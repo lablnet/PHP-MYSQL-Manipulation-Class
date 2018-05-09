@@ -12,4 +12,9 @@
  - Count record in table.
  - Quote string.
 
+# to-do
+ - Updating tables
+ - Creating table in efficient ways
+
+
 
