@@ -8,8 +8,18 @@
 	 * @link     https://github.com/Lablnet/PHP-MYSQL-Manipulation-Class
 	 *
 	 */
+	/**
+	 * PHP class
+	 * @param db-host,db-user,db-pass,db-name
+	 */	 
 class MYSQL
 {
+
+		/**
+		 * For sotring database settings 
+		 * @access private
+		 */	 	
+	private $settings;	
 		/**
 		 * For sotring database connection reference
 		 * @access private
@@ -21,7 +31,9 @@ class MYSQL
 		 *
 		 * @return void
 		 */	 
-	public function __construct(){
+	public function __construct($host,$user,$pass,$db){
+
+		$this->DbSettings($host,$user,$pass,$db);
 
 		$this->db = self::Connection(true);
 
@@ -50,9 +62,10 @@ class MYSQL
 
 	    if($status === true){
 
+	    	$setting = $this->settings;
 	        
 
-	        return $db = new PDO('mysql:host=localhost;dbname=php', 'root', '');
+	        return $db = new PDO('mysql:host='.$setting['host'].';dbname='.$setting['db'], $setting['user'], $setting['pass']);
 	    }
 
 	    if($status === false){
@@ -62,6 +75,31 @@ class MYSQL
 	    }
 
 	 }
+
+
+		/**
+		 * Database default setting
+		 *
+		 * @param 
+		 * $host Database host
+		 * $user Database user
+		 * $pass Database pass 
+		 * $db Database name
+		 *
+		 * @return void
+		 */	 	 
+	public function DbSettings($host,$user,$pass,$db){
+
+		$this->settings =  [
+			'host' => $host,
+			'user' => $user,
+			'pass' => $pass,
+			'db' => $db,
+		];
+
+		return;
+
+	} 
 
 		/**
 		 * Prepare a query to insert into db

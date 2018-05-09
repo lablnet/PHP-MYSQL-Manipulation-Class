@@ -1,7 +1,7 @@
 <?php 
 require_once 'classes/MYSQL.php';
 
-$mysql = new MYSQL;
+$mysql = new MYSQL("localhost","root",'','php');
 
 /* Creating tables */
 //$mysql->CreateDb("PHP");
