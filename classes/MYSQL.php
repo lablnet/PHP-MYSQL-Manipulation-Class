@@ -43,7 +43,8 @@ class MYSQL
 		 * Open database connection
 		 *
 		 * @param $status true : false  true means open false colse
-		 * 
+		 *
+		 * @access private 
 		 * @return boolean
 		 */	 
 	private function Connect($status){
@@ -85,8 +86,8 @@ class MYSQL
 		 * $host Database host
 		 * $user Database user
 		 * $pass Database pass 
-		 * $db Database name
 		 *
+		 * @access private
 		 * @return void
 		 */	 	 
 	private function DbSettings($host,$user,$pass){
