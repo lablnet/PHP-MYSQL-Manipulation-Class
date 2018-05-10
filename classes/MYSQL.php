@@ -551,8 +551,7 @@ class MYSQL
 			$this->db->exec($sql);		
 
 			return true;
-
-			
+	
 		}else{
 
 			return false;
