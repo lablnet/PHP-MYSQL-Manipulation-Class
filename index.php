@@ -38,6 +38,6 @@ print_r($result);
 /* Counting the records */
 //echo $mysql->Count(['table'=>'users','db_name'=>'PHP','wheres'=>['id ='. 9]]);
 
-//Close the connection its recommended to clsoe connection
+//Close the connection its recommended to clsoe connection 
 $mysql->Close();
 
