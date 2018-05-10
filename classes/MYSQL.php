@@ -10,7 +10,8 @@
 	 */
 	/**
 	 * PHP class
-	 * @param db-host,db-user,db-pass,db-name
+	 * Database name should be provided once needed
+	 * @param db-host,db-user,db-pass
 	 */	 
 class MYSQL
 {
@@ -31,26 +32,23 @@ class MYSQL
 		 *
 		 * @return void
 		 */	 
-	public function __construct($host,$user,$pass,$db){
+	public function __construct($host,$user,$pass){
 
-		$this->DbSettings($host,$user,$pass,$db);
+		$this->DbSettings($host,$user,$pass);
 
-		$this->db = self::Connection(true);
+		$this->db = self::Connect(true);
 
 	}
 		/**
-		 * Unset the value for performance 
+		 * Close the connections
 		 *
 		 * @return void
 		 */	 
 	public function __destruct(){
 
-		self::Connection(false);
+		self::Close();
 
-		unset($this->db);
-
-
-	}
+	}		
 		/**
 		 * Open database connection
 		 *
@@ -58,14 +56,14 @@ class MYSQL
 		 * 
 		 * @return boolean
 		 */	 
-	public function Connection($status){
+	public function Connect($status){
 
 	    if($status === true){
 
 	    	$setting = $this->settings;
 	        
 
-	        return $db = new PDO('mysql:host='.$setting['host'].';dbname='.$setting['db'], $setting['user'], $setting['pass']);
+	        return $db = new PDO('mysql:host='.$setting['host'], $setting['user'], $setting['pass']);
 	    }
 
 	    if($status === false){
@@ -75,7 +73,18 @@ class MYSQL
 	    }
 
 	 }
+		/**
+		 * Close database connection
+		 *
+		 * @return void
+		 */	 
+	 public function Close(){
 
+		self::Connect(false);
+
+		unset($this->db);
+
+	 }
 
 		/**
 		 * Database default setting
@@ -88,13 +97,12 @@ class MYSQL
 		 *
 		 * @return void
 		 */	 	 
-	public function DbSettings($host,$user,$pass,$db){
+	public function DbSettings($host,$user,$pass){
 
 		$this->settings =  [
 			'host' => $host,
 			'user' => $user,
 			'pass' => $pass,
-			'db' => $db,
 		];
 
 		return;
@@ -112,9 +120,7 @@ class MYSQL
 		 *
 		 * @return integar or boolean
 		 */	 	 
-	 public function Insert($table,$param){
-
-	 	$db = $this->db;
+	 public function Insert($table,$db,$param){
 
 		$columns = implode(',',array_keys($param));
 
@@ -122,17 +128,21 @@ class MYSQL
 
 		$sql = "INSERT INTO {$table} ({$columns}) values ({$values})";
 
-		if($stmt = $db->prepare($sql)){
+		$this->db->exec("USE `{$db}`");
+
+		if($stmt = $this->db->prepare($sql)){
 
 			foreach($param as $key => $data){
 
 				$stmt->bindValue(':'.$key,$data);
 
 			}
-			
+				
 			$stmt->execute();
 
-			$last =  $db->lastInsertId();
+			$last =  $this->db->lastInsertId();
+
+			$stmt->closeCursor();
 
 			return $last;
 
@@ -145,6 +155,7 @@ class MYSQL
 		 * Prepare a query to Update data in database
 		 * @param array $params; e.g:
 		 * 'table' required name of table
+		 * 'db_name' => Database name
 		 * 'wheres' Specify id or else for updating records
 		 * 'columns' => data e.g name=>new name
 		 *
@@ -153,8 +164,6 @@ class MYSQL
 	public function Update($params){
 
 		if(is_array($params)){
-
-				$db = $this->db;
 
 				$count_rows = count($params['columns']);
 
@@ -212,11 +221,15 @@ class MYSQL
 
 					}
 
-					$prepare = $db->prepare($query);
+					$this->db->exec("USE `{$params['db_name']}`");
+
+					$prepare = $this->db->prepare($query);
 
 					if($prepare->execute()) {
 
-							return true;
+						$prepare->closeCursor();
+
+						return true;
 
 					}			
 
@@ -236,7 +249,9 @@ class MYSQL
 		 */	 
 	public function Quote($string){
 
-		return $this->db->quote($string);
+		$quote = $this->db->quote($string);
+
+		return $quote;
 
 	}		
 		/**
@@ -244,6 +259,7 @@ class MYSQL
 		 *
 		 * @param array array();
 		 *           'table' Names of table
+		 * 			 'db_name' => Database name	
 		 *           'params' Names of columns which you want to select
 		 *           'wheres' Specify a selection criteria to get required records
 		 *            'debug' If on var_dump sql query
@@ -251,9 +267,7 @@ class MYSQL
 		 */	 
 	public function Select($params) {
 
-		if(is_array($params)) {
-
-				$db = $this->db;		
+		if(is_array($params)) {	
 
 					if(!isset($params['params'])) {
 
@@ -331,11 +345,14 @@ class MYSQL
 
 					}
 
-					$prepare = $db->prepare($query);
+					$this->db->exec("USE `{$params['db_name']}`");	
+					$prepare =  $this->db->prepare($query);
 
 					if($prepare->execute()) {
 
 							$data = $prepare->fetchAll(PDO::FETCH_ASSOC);
+
+							$prepare->closeCursor();
 
 							return $data;
 
@@ -350,6 +367,7 @@ class MYSQL
 	 *
 	 * @param $params array array();
 	 *           'table' Names of table
+	 *			 'db_name' => Database name		
 	 *           'wheres' Specify a selection criteria to get required records
 	 *
 	 * @return boolean
@@ -357,8 +375,6 @@ class MYSQL
 	public function Delete($params) {
 
 			if(is_array($params)) {
-
-					$db = $this->db;
 
 					if(!empty($params['wheres'])) {
 
@@ -371,9 +387,13 @@ class MYSQL
 					}
 					$query = "DELETE FROM `{$params['table']}` {$wheres};";
 
-					$prepare = $db->prepare($query);
+					$this->db->exec("USE `{$params['db_name']}`");
+
+					$prepare =  $this->db->prepare($query);
 
 					if($prepare->execute()) {
+
+							$prepare->closeCursor();
 
 							return true;
 					}
@@ -388,6 +408,7 @@ class MYSQL
 		 *
 		 * @param $params array();
 		 *           'table' Names of table
+		 *			 'db_name' => Database name	
 		 *           'columns' Names of columnswant to select
 		 *           'wheres' Specify a selection 		 *       
 		 * @return boolean
@@ -397,8 +418,6 @@ class MYSQL
 		if(is_array($params)){
 
 			$table = $params['table'];
-
-			$db = $this->db;
 
 			if(isset($params['columns'])){
 
@@ -416,11 +435,15 @@ class MYSQL
 
 				$sql = "SELECT {$columns} FROM {$table} {$where}";
 
-				$prepare = $db->prepare($sql);
+				$this->db->exec("USE `{$params['db_name']}`");
+
+				$prepare =  $this->db->prepare($sql);
 
 				$prepare->execute();
 
 				$count = $prepare->rowCount();
+
+				$prepare->closeCursor();
 
 				return $count;
 
@@ -452,8 +475,6 @@ class MYSQL
 
 			$this->db->exec($sql);
 
-			$this->db->exec("USE `{$name}` ");
-
 			return true;
 
 			
@@ -478,7 +499,7 @@ class MYSQL
 
 			$sql = "DROP DATABASE `{$name}` ";
 
-			$this->db->exec($sql);
+			$this->db->exec($sql);	
 
 			return true;
 
@@ -534,7 +555,7 @@ class MYSQL
 
 			$this->db->exec("USE `{$dbname}` ");	
 
-			$this->db->exec($sql);
+			$this->db->exec($sql);		
 
 			return true;
 
@@ -546,6 +567,4 @@ class MYSQL
 		}
 
 	}
-} 
-
-
+}

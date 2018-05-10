@@ -1,7 +1,7 @@
 <?php 
 require_once 'classes/MYSQL.php';
 
-$mysql = new MYSQL("localhost","root",'','php');
+$mysql = new MYSQL("localhost","root",'');
 
 /* Creating tables */
 //$mysql->CreateDb("PHP");
@@ -21,19 +21,19 @@ $mysql = new MYSQL("localhost","root",'','php');
 //$mysql->DeleteTbl("PHP","users");
 
 /* inserting records */
-//$id = $mysql->Insert('users',['first_name'=>'Malik Uner','last_name'=> 'Farooq','email'=> 'lablnet01@gmail.com']);
+//$id = $mysql->Insert('users','PHP',['first_name'=>'Malik Uner','last_name'=> 'Farooq','email'=> 'lablnet01@gmail.com']);
 
 /* updating database */
 //$id = 1;
-//$mysql->Update(['table'=>'users','columns'=>['first_name' => 'Malik Umer'],'wheres'=>['id ='. $id]]);
+//$mysql->Update(['table'=>'users','db_name'=>'PHP','columns'=>['first_name' => 'Malik Umer'],'wheres'=>['id ='. 1]]);
 
 /* selecting values */
-$result = $mysql->Select(['table'=>'users','wheres'=>['id ='. 1]]);
+$result = $mysql->Select(['table'=>'users','db_name'=>'PHP','wheres'=>['email ='. $mysql->Quote('lablnet01@gmail.com')]]);
 
 print_r($result);
 
 /* deleting the records */
-//$mysql->Delete(['table'=>'users','wheres'=>['id ='. 7]]);
+//$mysql->Delete(['table'=>'users','db_name'=>'PHP','wheres'=>['id ='. 9]]);
 
 /* Counting the records */
-//echo $mysql->Count(['table'=>'users','wheres'=>['id ='. 1]]);
+//echo $mysql->Count(['table'=>'users','db_name'=>'PHP','wheres'=>['id ='. 9]]);
