@@ -7,7 +7,7 @@
  - Delete table.
  - Insert into table.
  - Update record in table.
- - Select data form table.
+ - Select data form table (Joins,Limits,OrderBy,Wheres).
  - Delete record in table.
  - Count record in table.
  - Quote string.
