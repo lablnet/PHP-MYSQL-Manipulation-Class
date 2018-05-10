@@ -38,16 +38,6 @@ class MYSQL
 
 		$this->db = self::Connect(true);
 
-	}
-		/**
-		 * Close the connections
-		 *
-		 * @return void
-		 */	 
-	public function __destruct(){
-
-		self::Close();
-
 	}		
 		/**
 		 * Open database connection
@@ -56,7 +46,7 @@ class MYSQL
 		 * 
 		 * @return boolean
 		 */	 
-	public function Connect($status){
+	private function Connect($status){
 
 	    if($status === true){
 
@@ -84,6 +74,8 @@ class MYSQL
 
 		unset($this->db);
 
+		unset($this->settings);
+
 	 }
 
 		/**
@@ -97,7 +89,7 @@ class MYSQL
 		 *
 		 * @return void
 		 */	 	 
-	public function DbSettings($host,$user,$pass){
+	private function DbSettings($host,$user,$pass){
 
 		$this->settings =  [
 			'host' => $host,
