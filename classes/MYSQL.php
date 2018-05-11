@@ -427,7 +427,7 @@ class MYSQL
 		    	$where = "WHERE " . implode(' and ', array_values($params['wheres']));
 
 				$sql = "SELECT {$columns} FROM {$table} {$where}";
-
+				
 				$this->db->exec("USE `{$params['db_name']}`");
 
 				$prepare =  $this->db->prepare($sql);
@@ -462,7 +462,7 @@ class MYSQL
 		 */	
 	public function CreateDb($name){
 
-		if(isset($name) && !empty($name)){
+		if(isset($name) && !empty(trim($name))){
 
 			$sql = "CREATE DATABASE IF NOT EXISTS `{$name}`";
 
@@ -488,7 +488,7 @@ class MYSQL
 		 */		
 	public function DeleteDb($name){
 
-		if(isset($name) && !empty($name)){
+		if(isset($name) && !empty(trim($name))){
 
 			$sql = "DROP DATABASE `{$name}` ";
 
@@ -515,7 +515,7 @@ class MYSQL
 		 */	
 	public function DeleteTbl($dbname,$table){
 
-		if(isset($dbname) && !empty($dbname) && isset($table) && !empty($table)){
+		if(isset($dbname) && !empty(trim($dbname)) && isset($table) && !empty(trim($table))){
 
 			$this->db->exec("USE `{$dbname}` ");	
 
@@ -544,7 +544,7 @@ class MYSQL
 		 */	
 	public function CreateTbl($dbname,$sql){
 
-		if(isset($dbname) && !empty($dbname) && isset($sql) && !empty($sql)){
+		if(isset($dbname) && !empty(trim($dbname)) && isset($sql) && !empty(trim($sql))){
 
 			$this->db->exec("USE `{$dbname}` ");	
 
