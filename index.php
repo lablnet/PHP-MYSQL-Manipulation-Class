@@ -1,7 +1,8 @@
-<?php 
+<?php
+
 require_once 'classes/MYSQL.php';
 
-$mysql = new MYSQL("localhost","root",'');
+$mysql = new MYSQL('localhost', 'root', '');
 
 /* Creating tables */
 //$mysql->CreateDb("PHP");
@@ -28,7 +29,7 @@ $mysql = new MYSQL("localhost","root",'');
 //$mysql->Update(['table'=>'users','db_name'=>'PHP','columns'=>['first_name' => 'Malik Umer'],'wheres'=>['id ='. 1]]);
 
 /* selecting values */
-$result = $mysql->Select(['table'=>'users','db_name'=>'PHP','wheres'=>['email ='. $mysql->Quote('lablnet01@gmail.com')]]);
+$result = $mysql->Select(['table'=>'users', 'db_name'=>'PHP', 'wheres'=>['email ='.$mysql->Quote('lablnet01@gmail.com')]]);
 
 print_r($result);
 
@@ -38,6 +39,5 @@ print_r($result);
 /* Counting the records */
 //echo $mysql->Count(['table'=>'users','db_name'=>'PHP','wheres'=>['id ='. 9]]);
 
-//Close the connection its recommended to clsoe connection 
+//Close the connection its recommended to clsoe connection
 $mysql->Close();
-
